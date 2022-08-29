@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp_clone/colors.dart';
-import 'package:flutter_whatsapp_clone/screens/mobile_layout_screen.dart';
-import 'package:flutter_whatsapp_clone/screens/web_layout_screen.dart';
-import 'package:flutter_whatsapp_clone/utils/responsive_layout.dart';
+import 'package:flutter_whatsapp_clone/features/landing/screens/landing_screen.dart';
+import 'package:flutter_whatsapp_clone/router.dart';
 
 import 'firebase_options.dart';
 
@@ -12,7 +12,7 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,14 +22,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme:
-          ThemeData.dark().copyWith(scaffoldBackgroundColor: backgroundColor),
-      home: const ResponsiveLayout(
-        mobileScreenLayout: MobileScreenLayout(),
-        webScreenLayout: WebScreenLayout(),
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: backgroundColor,
+            appBarTheme: const AppBarTheme(color: appBarColor)),
+        onGenerateRoute: (settings) => generateRoute(settings),
+        home: const LandingScreen()
+
+        // const ResponsiveLayout(
+        //   mobileScreenLayout: MobileLayoutScreen(),
+        //   webScreenLayout: WebLayoutScreen(),
+        // ),
+        );
   }
 }
