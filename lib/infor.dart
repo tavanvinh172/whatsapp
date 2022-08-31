@@ -32,7 +32,7 @@ const info = [
     'message': 'You ate food?',
     'time': '10:00 am',
     'profilePic':
-        'https://uploads.dailydot.com/2018/10/olli-the-polite-cat.jpg?auto=compress%2Cformat&ixlib=php-3.3.0',
+        'https://images.unsplash.com/photo-1661872564900-df3445a0fc9d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyMnx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
   },
   {
     'name': 'Jurica',
