@@ -6,7 +6,7 @@ import 'package:flutter_whatsapp_clone/common/widgets/loader.dart';
 import 'package:flutter_whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:flutter_whatsapp_clone/features/chat/widgets/bottom_chat_field.dart';
 import 'package:flutter_whatsapp_clone/models/user.dart';
-import 'package:flutter_whatsapp_clone/widgets/chat_list.dart';
+import 'package:flutter_whatsapp_clone/features/chat/widgets/chat_list.dart';
 
 class MobileChatScreen extends ConsumerWidget {
   const MobileChatScreen({Key? key, required this.name, required this.uid})
@@ -63,8 +63,10 @@ class MobileChatScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          const Expanded(
-            child: ChatList(),
+          Expanded(
+            child: ChatList(
+              receiverUserID: uid,
+            ),
           ),
           BottomChatField(
             receiverUserId: uid,

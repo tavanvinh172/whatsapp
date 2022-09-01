@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp_clone/common/enums/message_enum.dart';
+import 'package:flutter_whatsapp_clone/common/repository/common_firebase_storage_repository.dart';
 import 'package:flutter_whatsapp_clone/common/utils/utils.dart';
 import 'package:flutter_whatsapp_clone/models/chat_contact.dart';
 import 'package:flutter_whatsapp_clone/models/message.dart';
@@ -134,6 +137,119 @@ class ChatRepository {
         messageId: messageId,
         receiverUsername: receiverUserData.name,
         username: senderUser.name,
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+  }
+
+  Stream<List<ChatContact>> getChatContact() {
+    return firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .snapshots()
+        .asyncMap((event) async {
+      List<ChatContact> contacts = [];
+      for (var document in event.docs) {
+        var chatContact = ChatContact.fromMap(document.data());
+        var userData = await firestore
+            .collection('users')
+            .doc(chatContact.contactId)
+            .get();
+        var user = UserModel.fromMap(userData.data()!);
+        contacts.add(
+          ChatContact(
+            name: user.name,
+            profilePic: user.profilePic,
+            contactId: chatContact.contactId,
+            timeSent: chatContact.timeSent,
+            lassMessage: chatContact.lassMessage,
+          ),
+        );
+      }
+      return contacts;
+    });
+  }
+
+  Stream<List<Message>> getChatStream(String receiverUserId) {
+    return firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverUserId)
+        .collection('messages')
+        .orderBy('timeSent')
+        .snapshots()
+        .asyncMap((event) async {
+      List<Message> messages = [];
+      for (var document in event.docs) {
+        messages.add(
+          Message.fromMap(
+            document.data(),
+          ),
+        );
+      }
+      return messages;
+    });
+  }
+
+  void sendFileMessage(
+      {required BuildContext context,
+      required File file,
+      required String receiverUserId,
+      required UserModel senderUserData,
+      required ProviderRef ref,
+      required MessageEnum messageEnum}) async {
+    try {
+      var timeSent = DateTime.now();
+      var messageId = const Uuid().v1();
+
+      String imageUrl = await ref
+          .read(conmmonFirebaseStorageRepositoryProvider)
+          .storeFileToFirebase(
+            'chats/${messageEnum.type}/${senderUserData.uid}/$receiverUserId/$messageId',
+            file,
+          );
+
+      UserModel receiverUserData;
+      var userDataMap =
+          await firestore.collection('users').doc(receiverUserId).get();
+
+      receiverUserData = UserModel.fromMap(userDataMap.data()!);
+      String contactMsg;
+      switch (messageEnum) {
+        case MessageEnum.image:
+          contactMsg = '📷 photo';
+          break;
+        case MessageEnum.audio:
+          contactMsg = '🎧 audio';
+          break;
+        case MessageEnum.video:
+          contactMsg = '📹 video';
+          break;
+        case MessageEnum.gif:
+          contactMsg = 'GIF';
+          break;
+        default:
+          contactMsg = 'GIF';
+      }
+      _saveDataToContactSubCollection(
+        senderUserData,
+        receiverUserData,
+        contactMsg,
+        timeSent,
+        receiverUserId,
+      );
+
+      _saveMessageToMessageSubCollection(
+        receiverUserId: receiverUserId,
+        text: imageUrl,
+        timeSent: timeSent,
+        messageId: messageId,
+        username: senderUserData.name,
+        receiverUsername: receiverUserData.name,
+        messageType: messageEnum,
       );
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
