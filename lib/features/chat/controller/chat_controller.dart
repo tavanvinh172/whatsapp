@@ -62,4 +62,25 @@ class ChatController {
           ),
         );
   }
+
+  void sendGIFMessage(
+    BuildContext context,
+    String gifUrl,
+    String receiverUserId,
+  ) {
+    // https://giphy.com/gifs/justviralnet-funny-kitten-sleepy-YTETMtpsueseikztWR
+    // https://i.giphy.com/media/YTETMtpsueseikztWR/200.gif
+    int gifUrlPartIndex = gifUrl.lastIndexOf('-') + 1;
+    String gifUrlPath = gifUrl.substring(gifUrlPartIndex);
+    String newgifUrl = 'https://i.giphy.com/media/$gifUrlPath/200.gif';
+
+    ref.read(userDataAuthProvider).whenData(
+          (value) => chatRepository.sendGIFMessage(
+            context: context,
+            gifUrl: newgifUrl,
+            receiverUserId: receiverUserId,
+            senderUser: value!,
+          ),
+        );
+  }
 }

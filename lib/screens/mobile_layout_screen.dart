@@ -17,7 +17,7 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding?.instance.addObserver(this);
   }
 
   @override
@@ -65,7 +65,8 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
             ),
             IconButton(
               icon: const Icon(Icons.more_vert, color: Colors.grey),
-              onPressed: () {},
+              onPressed: () =>
+                  ref.read(authControllerProvider).signOutUser(context),
             ),
           ],
           bottom: const TabBar(

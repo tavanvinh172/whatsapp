@@ -44,6 +44,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<key>NSAppleMusicUsageDescription</key>
+    <string>Needs to hear recordings</string>
 	<true/>
 </dict>
 </plist>

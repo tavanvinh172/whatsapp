@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp_clone/common/repository/common_firebase_storage_repository.dart';
 import 'package:flutter_whatsapp_clone/common/utils/utils.dart';
+import 'package:flutter_whatsapp_clone/features/auth/screens/login_screen.dart';
 import 'package:flutter_whatsapp_clone/features/auth/screens/otp_screen.dart';
 import 'package:flutter_whatsapp_clone/features/auth/screens/user_information_screen.dart';
 import 'package:flutter_whatsapp_clone/models/user.dart';
@@ -118,5 +119,11 @@ class AuthRepository {
         'isOnline': isOnline,
       },
     );
+  }
+
+  void signOutUser(BuildContext context) async {
+    await auth.signOut();
+    Navigator.pushNamedAndRemoveUntil(
+        context, LoginScreen.routeName, (route) => false);
   }
 }
