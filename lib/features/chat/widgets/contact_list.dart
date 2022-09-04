@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp_clone/colors.dart';
@@ -16,7 +17,7 @@ class ContactsList extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: StreamBuilder<List<ChatContact>>(
-          stream: ref.watch(chatControllerProvider).chatContacts(),
+          stream: ref.watch(chatControllerProvider).getCurrentContactList(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Loader();
@@ -26,6 +27,7 @@ class ContactsList extends ConsumerWidget {
             }
             return ListView.builder(
               shrinkWrap: true,
+              reverse: true,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final chatContactData = snapshot.data![index];
@@ -39,37 +41,73 @@ class ContactsList extends ConsumerWidget {
                               'uid': chatContactData.contactId,
                             });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: ListTile(
-                          title: Text(
-                            chatContactData.name,
-                            style: const TextStyle(
-                              fontSize: 18,
+                      child: FirebaseAuth.instance.currentUser!.uid ==
+                              chatContactData.contactId
+                          ? Container(
+                              color: const Color.fromARGB(255, 84, 94, 102),
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: ListTile(
+                                title: const Text(
+                                  'My Cloud',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(top: 6.0),
+                                  child: Text(
+                                    chatContactData.lassMessage,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    chatContactData.profilePic,
+                                  ),
+                                  radius: 30,
+                                ),
+                                trailing: Text(
+                                  DateFormat.Hm()
+                                      .format(chatContactData.timeSent),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: ListTile(
+                                title: Text(
+                                  chatContactData.name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(top: 6.0),
+                                  child: Text(
+                                    chatContactData.lassMessage,
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                                leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                    chatContactData.profilePic,
+                                  ),
+                                  radius: 30,
+                                ),
+                                trailing: Text(
+                                  DateFormat.Hm()
+                                      .format(chatContactData.timeSent),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 6.0),
-                            child: Text(
-                              chatContactData.lassMessage,
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                          ),
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              chatContactData.profilePic,
-                            ),
-                            radius: 30,
-                          ),
-                          trailing: Text(
-                            DateFormat.Hm().format(chatContactData.timeSent),
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                     const Divider(color: dividerColor, indent: 85),
                   ],

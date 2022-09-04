@@ -83,4 +83,8 @@ class ChatController {
           ),
         );
   }
+
+  Stream<List<ChatContact>> getCurrentContactList() {
+    return chatRepository.getCurrentContactList();
+  }
 }

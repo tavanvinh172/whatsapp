@@ -292,4 +292,21 @@ class ChatRepository {
       showSnackBar(context: context, content: e.toString());
     }
   }
+
+  Stream<List<ChatContact>> getCurrentContactList() {
+    return firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .snapshots()
+        .asyncMap((event) async {
+      List<ChatContact> contact = [];
+      for (var element in event.docs) {
+        contact.add(
+          ChatContact.fromMap(element.data()),
+        );
+      }
+      return contact;
+    });
+  }
 }

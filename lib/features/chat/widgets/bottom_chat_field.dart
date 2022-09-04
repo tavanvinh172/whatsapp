@@ -66,6 +66,10 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           toFile: path,
         );
       }
+
+      setState(() {
+        isRecording = !isRecording;
+      });
     }
   }
 
@@ -135,7 +139,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
 
   @override
   Widget build(BuildContext context) {
-    print('isShowEmoji: $isShowEmoji');
     return Column(
       children: [
         Row(

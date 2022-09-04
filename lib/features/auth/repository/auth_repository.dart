@@ -39,17 +39,22 @@ class AuthRepository {
   ) async {
     try {
       await auth.verifyPhoneNumber(
+          //  verificationCompleted: Automatic handling of the SMS code on Android devices.
+          // ANDROID ONLY
           verificationCompleted: (PhoneAuthCredential credential) async {
             await auth.signInWithCredential(credential);
           },
           phoneNumber: phoneNumber,
+          // verificationFailed: Handle failure events such as invalid phone numbers or whether the SMS quota has been exceeded.
           verificationFailed: (e) {
             throw Exception(e.message);
           },
+          // codeSent: Handle when a code has been sent to the device from Firebase, used to prompt users to enter the code.
           codeSent: (verificationId, int? resendingToken) {
             Navigator.pushNamed(context, OTPScreen.routeName,
                 arguments: verificationId);
           },
+          // codeAutoRetrievalTimeout: Handle a timeout of when automatic SMS code handling fails.
           codeAutoRetrievalTimeout: (String verificationId) {});
     } on FirebaseException catch (e) {
       showSnackBar(context: context, content: e.message!);
