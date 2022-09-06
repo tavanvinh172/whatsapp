@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_whatsapp_clone/common/enums/message_enum.dart';
+import 'package:flutter_whatsapp_clone/common/providers/message_reply_provider.dart';
 import 'package:flutter_whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:flutter_whatsapp_clone/features/chat/repository/chat_repository.dart';
 import 'package:flutter_whatsapp_clone/models/chat_contact.dart';
@@ -27,14 +28,16 @@ class ChatController {
     String text,
     String receiverUserId,
   ) {
+    final messageReply = ref.read(messageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendTextMessage(
-            context: context,
-            text: text,
-            receiverUserId: receiverUserId,
-            senderUser: value!,
-          ),
+              context: context,
+              text: text,
+              receiverUserId: receiverUserId,
+              senderUser: value!,
+              messageReply: messageReply),
         );
+    ref.read(messageReplyProvider.state).update((state) => null);
   }
 
   Stream<List<ChatContact>> chatContacts() {
@@ -51,16 +54,19 @@ class ChatController {
     String receiverUserId,
     MessageEnum messageEnum,
   ) {
+    final messageReply = ref.read(messageReplyProvider);
+
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendFileMessage(
-            context: context,
-            file: file,
-            receiverUserId: receiverUserId,
-            senderUserData: value!,
-            messageEnum: messageEnum,
-            ref: ref,
-          ),
+              context: context,
+              file: file,
+              receiverUserId: receiverUserId,
+              senderUserData: value!,
+              messageEnum: messageEnum,
+              ref: ref,
+              messageReply: messageReply),
         );
+    ref.read(messageReplyProvider.state).update((state) => null);
   }
 
   void sendGIFMessage(
@@ -68,6 +74,8 @@ class ChatController {
     String gifUrl,
     String receiverUserId,
   ) {
+    final messageReply = ref.read(messageReplyProvider);
+
     // https://giphy.com/gifs/justviralnet-funny-kitten-sleepy-YTETMtpsueseikztWR
     // https://i.giphy.com/media/YTETMtpsueseikztWR/200.gif
     int gifUrlPartIndex = gifUrl.lastIndexOf('-') + 1;
@@ -76,12 +84,13 @@ class ChatController {
 
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendGIFMessage(
-            context: context,
-            gifUrl: newgifUrl,
-            receiverUserId: receiverUserId,
-            senderUser: value!,
-          ),
+              context: context,
+              gifUrl: newgifUrl,
+              receiverUserId: receiverUserId,
+              senderUser: value!,
+              messageReply: messageReply),
         );
+    ref.read(messageReplyProvider.state).update((state) => null);
   }
 
   Stream<List<ChatContact>> getCurrentContactList() {
