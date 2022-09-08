@@ -328,4 +328,32 @@ class ChatRepository {
       return contact;
     });
   }
+
+  void setChatMessageSeen(
+    BuildContext context,
+    String receiverUserId,
+    String messageId,
+  ) {
+    try {
+      firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('chats')
+          .doc(receiverUserId)
+          .collection('messages')
+          .doc(messageId)
+          .update({'isSeen': true});
+      // user -> receiver id ->  sender id-> messages -> message id -> store message
+      firestore
+          .collection('users')
+          .doc(receiverUserId)
+          .collection('chats')
+          .doc(auth.currentUser!.uid)
+          .collection('messages')
+          .doc(messageId)
+          .update({'isSeen': true});
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+  }
 }

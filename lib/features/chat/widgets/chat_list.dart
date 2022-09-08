@@ -44,7 +44,6 @@ class _ChatListState extends ConsumerState<ChatList> {
             return const Loader();
           }
           if (snapshot.hasError) {
-            print(snapshot.error.toString());
             return ErrorScreen(error: snapshot.error.toString());
           }
 
@@ -59,6 +58,12 @@ class _ChatListState extends ConsumerState<ChatList> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final messageData = snapshot.data![index];
+              if (!messageData.isSeen &&
+                  messageData.receiverId ==
+                      FirebaseAuth.instance.currentUser!.uid) {
+                ref.read(chatControllerProvider).setChatMessageSeen(
+                    context, widget.receiverUserID, messageData.messageId);
+              }
               if (messageData.senderId ==
                   FirebaseAuth.instance.currentUser!.uid) {
                 return MyMessageCard(
@@ -70,18 +75,20 @@ class _ChatListState extends ConsumerState<ChatList> {
                   repliedMessageType: messageData.repliedMessageType,
                   onLeftSwipe: () =>
                       onMessageSwipe(messageData.text, true, messageData.type),
+                  isSeen: messageData.isSeen,
+                );
+              } else {
+                return SenderMessageCard(
+                  type: messageData.type,
+                  message: messageData.text,
+                  date: DateFormat.Hm().format(messageData.timeSent),
+                  repliedText: messageData.repliedMessage,
+                  username: messageData.repliedTo,
+                  repliedMessageType: messageData.repliedMessageType,
+                  onRightSwipe: () =>
+                      onMessageSwipe(messageData.text, false, messageData.type),
                 );
               }
-              return SenderMessageCard(
-                type: messageData.type,
-                message: messageData.text,
-                date: DateFormat.Hm().format(messageData.timeSent),
-                repliedText: messageData.repliedMessage,
-                username: messageData.repliedTo,
-                repliedMessageType: messageData.repliedMessageType,
-                onRightSwipe: () =>
-                    onMessageSwipe(messageData.text, false, messageData.type),
-              );
             },
           );
         });

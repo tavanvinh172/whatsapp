@@ -96,4 +96,9 @@ class ChatController {
   Stream<List<ChatContact>> getCurrentContactList() {
     return chatRepository.getCurrentContactList();
   }
+
+  void setChatMessageSeen(
+      BuildContext context, String receiverUserId, String messageId) {
+    chatRepository.setChatMessageSeen(context, receiverUserId, messageId);
+  }
 }

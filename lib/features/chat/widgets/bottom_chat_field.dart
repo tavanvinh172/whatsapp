@@ -32,6 +32,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   FlutterSoundRecorder? _soundRecorder;
   bool isRecorderInit = false;
   bool isRecording = false;
+  bool isSendVideo = false;
 
   @override
   void initState() {
@@ -94,10 +95,17 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   }
 
   void selectVideo() async {
+    setState(() {
+      isSendVideo = true;
+    });
+    const LinearProgressIndicator();
     File? video = await pickVideoFromGallery(context);
     if (video != null) {
       sendFileMessage(video, MessageEnum.video);
     }
+    setState(() {
+      isSendVideo = false;
+    });
   }
 
   void selectGIF() async {

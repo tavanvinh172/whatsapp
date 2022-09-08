@@ -25,94 +25,105 @@ class ContactsList extends ConsumerWidget {
             if (snapshot.hasError) {
               return ErrorScreen(error: snapshot.error.toString());
             }
-            return ListView.builder(
-              shrinkWrap: true,
-              reverse: true,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final chatContactData = snapshot.data![index];
-                return Column(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, MobileChatScreen.routeName,
-                            arguments: {
-                              'name': chatContactData.name,
-                              'uid': chatContactData.contactId,
-                            });
-                      },
-                      child: FirebaseAuth.instance.currentUser!.uid ==
-                              chatContactData.contactId
-                          ? Container(
-                              color: const Color.fromARGB(255, 84, 94, 102),
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ListTile(
-                                title: const Text(
-                                  'My Cloud',
-                                  style: TextStyle(
-                                    fontSize: 18,
+            return Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  reverse: true,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final chatContactData = snapshot.data![index];
+                    final length = chatContactData.lassMessage.length;
+                    print(length);
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, MobileChatScreen.routeName,
+                                arguments: {
+                                  'name': chatContactData.name,
+                                  'uid': chatContactData.contactId,
+                                });
+                          },
+                          child: FirebaseAuth.instance.currentUser!.uid ==
+                                  chatContactData.contactId
+                              ? Container(
+                                  color: const Color.fromARGB(255, 84, 94, 102),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: ListTile(
+                                    title: const Text(
+                                      'My Cloud',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(top: 6.0),
+                                      child: Text(
+                                        length < 30
+                                            ? chatContactData.lassMessage
+                                            : '${chatContactData.lassMessage.substring(0, 30)}...',
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                                    leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        chatContactData.profilePic,
+                                      ),
+                                      radius: 30,
+                                    ),
+                                    trailing: Text(
+                                      DateFormat.Hm()
+                                          .format(chatContactData.timeSent),
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: ListTile(
+                                    title: Text(
+                                      chatContactData.name,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    subtitle: Padding(
+                                      padding: const EdgeInsets.only(top: 6.0),
+                                      child: Text(
+                                        length < 30
+                                            ? chatContactData.lassMessage
+                                            : '${chatContactData.lassMessage.substring(0, 30)}...',
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                    ),
+                                    leading: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        chatContactData.profilePic,
+                                      ),
+                                      radius: 30,
+                                    ),
+                                    trailing: Text(
+                                      DateFormat.Hm()
+                                          .format(chatContactData.timeSent),
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 13,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
-                                  child: Text(
-                                    chatContactData.lassMessage,
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    chatContactData.profilePic,
-                                  ),
-                                  radius: 30,
-                                ),
-                                trailing: Text(
-                                  DateFormat.Hm()
-                                      .format(chatContactData.timeSent),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ListTile(
-                                title: Text(
-                                  chatContactData.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
-                                  child: Text(
-                                    chatContactData.lassMessage,
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    chatContactData.profilePic,
-                                  ),
-                                  radius: 30,
-                                ),
-                                trailing: Text(
-                                  DateFormat.Hm()
-                                      .format(chatContactData.timeSent),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                    ),
-                    const Divider(color: dividerColor, indent: 85),
-                  ],
-                );
-              },
+                        ),
+                        const Divider(color: dividerColor, indent: 85),
+                      ],
+                    );
+                  },
+                ),
+              ],
             );
           }),
     );
