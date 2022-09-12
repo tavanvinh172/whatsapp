@@ -28,6 +28,7 @@ class StatusContactScreen extends ConsumerWidget {
           itemCount: snapshot.data!.length,
           itemBuilder: (context, index) {
             var statusData = snapshot.data![index];
+            print('statusData: $statusData');
             return Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Column(

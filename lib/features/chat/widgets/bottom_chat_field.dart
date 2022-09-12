@@ -16,9 +16,11 @@ import 'package:permission_handler/permission_handler.dart';
 class BottomChatField extends ConsumerStatefulWidget {
   const BottomChatField({
     required this.receiverUserId,
+    required this.isGroupChat,
     Key? key,
   }) : super(key: key);
   final String receiverUserId;
+  final bool isGroupChat;
   @override
   ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
 }
@@ -53,7 +55,11 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void sendTextMessage() async {
     if (isShowSendButton) {
       ref.read(chatControllerProvider).sendTextMessage(
-          context, _messageController.text.trim(), widget.receiverUserId);
+            context,
+            _messageController.text.trim(),
+            widget.receiverUserId,
+            widget.isGroupChat,
+          );
       setState(() {
         _messageController.text = "";
       });
@@ -84,6 +90,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           file,
           widget.receiverUserId,
           messageEnum,
+          widget.isGroupChat,
         );
   }
 
@@ -111,9 +118,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void selectGIF() async {
     final gif = await pickGIF(context);
     if (gif != null) {
-      ref
-          .read(chatControllerProvider)
-          .sendGIFMessage(context, gif.url, widget.receiverUserId);
+      // ignore: use_build_context_synchronously
+      ref.read(chatControllerProvider).sendGIFMessage(
+            context,
+            gif.url,
+            widget.receiverUserId,
+            widget.isGroupChat,
+          );
     }
   }
 

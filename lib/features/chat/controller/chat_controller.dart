@@ -7,6 +7,7 @@ import 'package:flutter_whatsapp_clone/common/providers/message_reply_provider.d
 import 'package:flutter_whatsapp_clone/features/auth/controller/auth_controller.dart';
 import 'package:flutter_whatsapp_clone/features/chat/repository/chat_repository.dart';
 import 'package:flutter_whatsapp_clone/models/chat_contact.dart';
+import 'package:flutter_whatsapp_clone/models/group.dart';
 import 'package:flutter_whatsapp_clone/models/message.dart';
 
 final chatControllerProvider = Provider<ChatController>((ref) {
@@ -21,21 +22,27 @@ class ChatController {
   final ChatRepository chatRepository;
   final ProviderRef ref;
 
-  ChatController({required this.chatRepository, required this.ref});
+  ChatController({
+    required this.chatRepository,
+    required this.ref,
+  });
 
   void sendTextMessage(
     BuildContext context,
     String text,
     String receiverUserId,
+    bool isGroupChat,
   ) {
     final messageReply = ref.read(messageReplyProvider);
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendTextMessage(
-              context: context,
-              text: text,
-              receiverUserId: receiverUserId,
-              senderUser: value!,
-              messageReply: messageReply),
+            context: context,
+            text: text,
+            receiverUserId: receiverUserId,
+            senderUser: value!,
+            messageReply: messageReply,
+            isGroupChat: isGroupChat,
+          ),
         );
     ref.read(messageReplyProvider.state).update((state) => null);
   }
@@ -44,8 +51,16 @@ class ChatController {
     return chatRepository.getChatContact();
   }
 
+  Stream<List<Group>> chatGroups() {
+    return chatRepository.getChatGroups();
+  }
+
   Stream<List<Message>> chatStream(String receiverUserId) {
     return chatRepository.getChatStream(receiverUserId);
+  }
+
+  Stream<List<Message>> groupChatStream(String groupId) {
+    return chatRepository.getGroupChatStream(groupId);
   }
 
   void sendFileMessage(
@@ -53,18 +68,21 @@ class ChatController {
     File file,
     String receiverUserId,
     MessageEnum messageEnum,
+    bool isGroupChat,
   ) {
     final messageReply = ref.read(messageReplyProvider);
 
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendFileMessage(
-              context: context,
-              file: file,
-              receiverUserId: receiverUserId,
-              senderUserData: value!,
-              messageEnum: messageEnum,
-              ref: ref,
-              messageReply: messageReply),
+            context: context,
+            file: file,
+            receiverUserId: receiverUserId,
+            senderUserData: value!,
+            messageEnum: messageEnum,
+            ref: ref,
+            isGroupChat: isGroupChat,
+            messageReply: messageReply,
+          ),
         );
     ref.read(messageReplyProvider.state).update((state) => null);
   }
@@ -73,6 +91,7 @@ class ChatController {
     BuildContext context,
     String gifUrl,
     String receiverUserId,
+    bool isGroupChat,
   ) {
     final messageReply = ref.read(messageReplyProvider);
 
@@ -84,11 +103,13 @@ class ChatController {
 
     ref.read(userDataAuthProvider).whenData(
           (value) => chatRepository.sendGIFMessage(
-              context: context,
-              gifUrl: newgifUrl,
-              receiverUserId: receiverUserId,
-              senderUser: value!,
-              messageReply: messageReply),
+            context: context,
+            gifUrl: newgifUrl,
+            receiverUserId: receiverUserId,
+            senderUser: value!,
+            isGroupChat: isGroupChat,
+            messageReply: messageReply,
+          ),
         );
     ref.read(messageReplyProvider.state).update((state) => null);
   }

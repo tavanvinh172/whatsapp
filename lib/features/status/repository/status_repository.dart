@@ -44,7 +44,7 @@ class StatusRepository {
       String imageUrl = await ref
           .read(conmmonFirebaseStorageRepositoryProvider)
           .storeFileToFirebase(
-            '/status/$statusId/$uid',
+            '/status/$statusId$uid',
             statusImage,
           );
       List<Contact> contacts = [];

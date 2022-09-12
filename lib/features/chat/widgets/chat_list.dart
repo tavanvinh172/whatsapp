@@ -1,20 +1,28 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
 import 'package:flutter_whatsapp_clone/common/enums/message_enum.dart';
 import 'package:flutter_whatsapp_clone/common/providers/message_reply_provider.dart';
 import 'package:flutter_whatsapp_clone/common/widgets/error.dart';
 import 'package:flutter_whatsapp_clone/common/widgets/loader.dart';
 import 'package:flutter_whatsapp_clone/features/chat/controller/chat_controller.dart';
-import 'package:flutter_whatsapp_clone/models/message.dart';
 import 'package:flutter_whatsapp_clone/features/chat/widgets/my_message_card.dart';
 import 'package:flutter_whatsapp_clone/features/chat/widgets/sender_message_card.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_whatsapp_clone/models/message.dart';
 
 class ChatList extends ConsumerStatefulWidget {
-  const ChatList({required this.receiverUserID, Key? key}) : super(key: key);
+  const ChatList({
+    required this.receiverUserID,
+    required this.isGroupChat,
+    Key? key,
+  }) : super(key: key);
   final String receiverUserID;
+  final bool isGroupChat;
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ChatListState();
 }
@@ -37,8 +45,13 @@ class _ChatListState extends ConsumerState<ChatList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Message>>(
-        stream:
-            ref.read(chatControllerProvider).chatStream(widget.receiverUserID),
+        stream: widget.isGroupChat
+            ? ref
+                .read(chatControllerProvider)
+                .groupChatStream(widget.receiverUserID)
+            : ref
+                .read(chatControllerProvider)
+                .chatStream(widget.receiverUserID),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Loader();
